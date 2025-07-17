@@ -4,7 +4,7 @@
 [ -n "$BASH_VERSION" ] && set +o noglob
 [ -n "$ZSH_VERSION" ] && setopt glob no_nomatch
 
-URL_GH_PROXY='https://gh-proxy.com/'
+URL_GH_PROXY='https://mirror.ghproxy.com/'
 URL_CLASH_UI="http://board.zash.run.place"
 
 SCRIPT_BASE_DIR='./script'
@@ -244,23 +244,23 @@ _download_clash() {
     local url sha256sum
     case "$arch" in
     x86_64)
-        url=https://downloads.clash.wiki/ClashPremium/clash-linux-amd64-2023.08.17.gz
+        url=https://mirror.ghproxy.com/https://github.com/Dreamacro/clash/releases/download/premium/clash-linux-amd64-2023.08.17.gz
         sha256sum='92380f053f083e3794c1681583be013a57b160292d1d9e1056e7fa1c2d948747'
         ;;
     *86*)
-        url=https://downloads.clash.wiki/ClashPremium/clash-linux-386-2023.08.17.gz
+        url=https://mirror.ghproxy.com/https://github.com/Dreamacro/clash/releases/download/premium/clash-linux-386-2023.08.17.gz
         sha256sum='254125efa731ade3c1bf7cfd83ae09a824e1361592ccd7c0cccd2a266dcb92b5'
         ;;
     armv*)
-        url=https://downloads.clash.wiki/ClashPremium/clash-linux-armv5-2023.08.17.gz
+        url=https://mirror.ghproxy.com/https://github.com/Dreamacro/clash/releases/download/premium/clash-linux-armv5-2023.08.17.gz
         sha256sum='622f5e774847782b6d54066f0716114a088f143f9bdd37edf3394ae8253062e8'
         ;;
     aarch64)
-        url=https://downloads.clash.wiki/ClashPremium/clash-linux-arm64-2023.08.17.gz
+        url=https://mirror.ghproxy.com/https://github.com/Dreamacro/clash/releases/download/premium/clash-linux-arm64-2023.08.17.gz
         sha256sum='c45b39bb241e270ae5f4498e2af75cecc0f03c9db3c0db5e55c8c4919f01afdd'
         ;;
     *)
-        _error_quit "未知的架构版本：$arch，请自行下载对应版本至 ${ZIP_BASE_DIR} 目录下：https://downloads.clash.wiki/ClashPremium/"
+        _error_quit "未知的架构版本：$arch，请自行下载对应版本至 ${ZIP_BASE_DIR} 目录下：https://mirror.ghproxy.com/https://github.com/Dreamacro/clash/releases"
         ;;
     esac
 
