@@ -228,8 +228,91 @@ function _valid_env() {
     [ "$(ps -p 1 -o comm=)" != "systemd" ] && _error_quit "系统不具备 systemd"
 }
 
+# 预下载 GeoSite 数据文件（解决国内网络环境下载超时问题）
+_predownload_geodata() {
+    local config_dir=$(dirname "$1")
+    
+    _okcat '⏳' '正在预下载 GeoSite 数据文件...'
+    
+    # 下载 GeoSite.dat
+    [ ! -f "${config_dir}/GeoSite.dat" ] && {
+        curl \
+            --silent \
+            --show-error \
+            --insecure \
+            --connect-timeout 30 \
+            --max-time 120 \
+            --retry 3 \
+            --retry-delay 5 \
+            --output "${config_dir}/GeoSite.dat" \
+            "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat" || {
+                # 尝试备用CDN
+                curl \
+                    --silent \
+                    --show-error \
+                    --insecure \
+                    --connect-timeout 30 \
+                    --max-time 120 \
+                    --retry 2 \
+                    --output "${config_dir}/GeoSite.dat" \
+                    "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat" || {
+                        _failcat '下载 GeoSite.dat 失败，请检查网络连接'
+                        return 1
+                    }
+            }
+    }
+    
+    # 下载 GeoIP.dat
+    [ ! -f "${config_dir}/GeoIP.dat" ] && {
+        curl \
+            --silent \
+            --show-error \
+            --insecure \
+            --connect-timeout 30 \
+            --max-time 120 \
+            --retry 3 \
+            --retry-delay 5 \
+            --output "${config_dir}/GeoIP.dat" \
+            "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.dat" || {
+                curl \
+                    --silent \
+                    --show-error \
+                    --insecure \
+                    --connect-timeout 30 \
+                    --max-time 120 \
+                    --retry 2 \
+                    --output "${config_dir}/GeoIP.dat" \
+                    "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.dat"
+            }
+    }
+    
+    # 下载 Country.mmdb
+    [ ! -f "${config_dir}/Country.mmdb" ] && {
+        curl \
+            --silent \
+            --show-error \
+            --insecure \
+            --connect-timeout 30 \
+            --max-time 120 \
+            --retry 3 \
+            --retry-delay 5 \
+            --output "${config_dir}/Country.mmdb" \
+            "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/country.mmdb" || {
+                # 使用内置的 Country.mmdb 文件
+                [ -f "${RESOURCES_BASE_DIR}/Country.mmdb" ] && {
+                    cp "${RESOURCES_BASE_DIR}/Country.mmdb" "${config_dir}/Country.mmdb"
+                }
+            }
+    }
+    
+    _okcat '✅' 'GeoSite 数据文件准备完成'
+}
+
 function _valid_config() {
     [ -e "$1" ] && [ "$(wc -l <"$1")" -gt 1 ] && {
+        # 在验证配置前先预下载 GeoSite 文件
+        _predownload_geodata "$1"
+        
         local cmd msg
         cmd="$BIN_KERNEL -d $(dirname "$1") -f $1 -t"
         msg=$(eval "$cmd") || {
