@@ -2,16 +2,6 @@
 system-proxy:
   enable: true
 
-# 地理位置数据库配置 (使用国内镜像源)
-geodata-mode: true
-geodata-loader: memconservative
-geo-auto-update: true
-geo-update-interval: 72
-geox-url:
-  geoip: "https://cdn.jsdelivr.net/gh/Loyalsoldier/v2ray-rules-dat@release/geoip.dat"
-  geosite: "https://cdn.jsdelivr.net/gh/Loyalsoldier/v2ray-rules-dat@release/geosite.dat"
-  mmdb: "https://cdn.jsdelivr.net/gh/Loyalsoldier/geoip@release/Country.mmdb"
-
 # Web 控制台配置
 external-controller: "0.0.0.0:9090"
 external-ui: public
@@ -48,5 +38,25 @@ dns:
   listen: 0.0.0.0:1053
   enhanced-mode: fake-ip
   nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
     - 114.114.114.114
     - 8.8.8.8
+  fallback:
+    - 8.8.8.8
+    - 1.1.1.1
+  fallback-filter:
+    geoip: true
+    geoip-code: CN
+    ipcidr:
+      - 240.0.0.0/4
+
+# GeoSite 和 GeoIP 数据源配置（解决国内下载超时问题）
+geodata-mode: true
+geodata-loader: memconservative
+geo-auto-update: true
+geo-update-interval: 24
+geox-url:
+  geoip: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.dat"
+  geosite: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat"
+  mmdb: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/country.mmdb"
